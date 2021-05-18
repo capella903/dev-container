@@ -1,0 +1,23 @@
+version: "3"
+services:
+  dev-container:
+    build:
+      context: .
+      args:
+        USERNAME: ${USERNAME:-ubuntu}
+    image: dev-container:${IMAGE_TAG:-development}
+    user: ${USERNAME:-ubuntu}
+    command: /bin/sh -c "while sleep 1000; do :; done"
+    environment:
+      - LANG=C.UTF-8
+      - TZ=Asia/Tokyo
+    volumes:
+      - type: volume
+        source: remote-workspace
+        target: /workspace
+      - type: bind
+        source: /var/run/docker.sock
+        target: /var/run/docker.sock
+
+volumes:
+  remote-workspace:
