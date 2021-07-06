@@ -8,6 +8,7 @@ RUN \
     apt-transport-https \
     ca-certificates \
     curl \
+    direnv \
     gnupg \
     jq \
     lsb-release \
@@ -71,4 +72,6 @@ RUN \
 USER $USERNAME
 
 RUN \
-  /opt/fzf/install --all --xdg
+  /opt/fzf/install --all --xdg \
+  && echo 'eval "$(direnv hook bash)"' >> ~/.bashrc \
+  && echo 'eval "$(direnv hook zsh)"' >> ~/.zshrc
