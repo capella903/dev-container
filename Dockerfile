@@ -8,6 +8,7 @@ RUN \
     apt-transport-https \
     ca-certificates \
     curl \
+    direnv \
     gnupg \
     jq \
     lsb-release \
@@ -17,6 +18,7 @@ RUN \
     tig \
     tree \
     wget \
+    unzip \
     zsh \
   && rm -rf /var/lib/apt/lists/*
 
@@ -42,6 +44,20 @@ RUN \
   && rm -rf /var/lib/apt/lists/* \
   && pip3 install --upgrade pynvim
 
+# Install fzf
+RUN \
+  git clone --depth 1 https://github.com/junegunn/fzf.git /opt/fzf \
+  && /opt/fzf/install --bin \
+  && ln -s /opt/fzf/bin/fzf /usr/local/bin/
+
+# Install ghq
+RUN \
+  curl -o /tmp/ghq_linux_amd64.zip -L https://github.com/x-motemen/ghq/releases/download/v1.2.1/ghq_linux_amd64.zip \
+  && unzip /tmp/ghq_linux_amd64.zip -d /tmp \
+  && mv /tmp/ghq_linux_amd64 /opt/ghq \
+  && ln -s /opt/ghq/ghq /usr/local/bin/ \
+  && rm -f /tmp/ghq_linux_amd64.zip
+
 # Create the user
 ARG USERNAME=ubuntu
 ARG USER_UID=1000
@@ -54,3 +70,10 @@ RUN \
   && chmod 0440 /etc/sudoers.d/$USERNAME \
   && mkdir /workspace \
   && chown $USERNAME:$USERNAME /workspace
+
+USER $USERNAME
+
+RUN \
+  /opt/fzf/install --all --xdg \
+  && echo 'eval "$(direnv hook bash)"' >> ~/.bashrc \
+  && echo 'eval "$(direnv hook zsh)"' >> ~/.zshrc
